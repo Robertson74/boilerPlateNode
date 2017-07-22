@@ -8,6 +8,13 @@ import { Connection, createConnection } from "typeorm";
 import { DevConfig } from "../../../config/devConfig";
 import { IConfigInterface } from "../../../config/interface/IconfigInterface";
 
+/**
+ * Creates a TypeORM Mysql connection
+ * @name MysqlConnectionCreator
+ * @function
+ * @author Michael Robertson
+ * @date 2017-07-21
+ */
 export class MysqlConnectionCreator {
 
   private _config: IConfigInterface;
@@ -19,7 +26,7 @@ export class MysqlConnectionCreator {
   }
 
   public async createMysqlConnection(): Promise<Connection>  {
-    const conn = await this._createConnection({
+    const conn: Connection = await this._createConnection({
       type: "mysql",
       host: this._config.dbHost,
       port: this._config.dbPort,
@@ -27,7 +34,7 @@ export class MysqlConnectionCreator {
       password: this._config.dbPass,
       database: this._config.dbName,
       entities: [
-        "./entities/*"
+        "build/src/domain/DAL/mysql/entities/*.js"
       ],
       autoSchemaSync: true,
     });
