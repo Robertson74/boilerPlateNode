@@ -3,29 +3,27 @@
  * @author Michael Robertson
  * @version 0.0.1
  */
-import { IRepository } from "../interfaces/IRepoitory";
 import { Repository as TypeScriptRepository } from "typeorm";
+import { IRepository } from "../interface/IRepository";
 
 export abstract class BaseRepository<T> implements IRepository<T> {
 
   private _repository: TypeScriptRepository<T>;
 
-  baseInitialize(repository: TypeScriptRepository<T>) {
-      this._repository = repository;
-    }
+  public initialize(repository: TypeScriptRepository<T>): void {
+    this._repository = repository;
+  }
 
-  getAll(): Promise<T[]> {
-      return this._repository.find();
-    }
+  public async getAll(): Promise<T[]> {
+    return await this._repository.find();
+  }
 
-  getById(id: number): Promise<T | undefined> {
-      let entity = this._repository.findOneById(id);
-      if (entity) {
-            return entity;
-          }
-      else {
-            throw "No element found for supplied id ";
-          }
+  public async getById(id: number): Promise<T | undefined> {
+    try {
+      return await this._repository.findOneById(id);
+    } catch (e) {
+      return Promise.reject("ERROR");
     }
+  }
 
 }
