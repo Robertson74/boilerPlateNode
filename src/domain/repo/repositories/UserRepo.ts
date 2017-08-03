@@ -6,6 +6,6 @@
 import { User } from "../../DAL/mysql/entities/User";
 import { BaseRepository } from "../base/baseRepo";
 
-class UserRepo extends BaseRepository<User> {
+export class UserRepo extends BaseRepository<User> {
 
 }

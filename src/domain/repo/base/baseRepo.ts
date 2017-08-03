@@ -26,4 +26,9 @@ export abstract class BaseRepository<T> implements IRepository<T> {
     }
   }
 
+  public async save(entities: T | T[]): Promise<boolean> {
+    // this._repository.save(entities);
+    return Promise.resolve(true);
+  }
+
 }
