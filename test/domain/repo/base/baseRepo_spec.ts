@@ -70,8 +70,8 @@ describe("BaseRepository", () => {
     });
   });
 
-  describe("save()", () => {
-    it("should call save() on dependant repo", async () => {
+  describe("save() (single entity)", () => {
+    it("should call save() on dependant repo when passed a single entities", async () => {
       // user object for test
       const testObj: IMockType = { id: 1 };
       // dependency
@@ -79,8 +79,52 @@ describe("BaseRepository", () => {
       const stubRepo: Repository<IMockType> = instance(mockRepo);
       // object under test
       mockBaseRepo.initialize(stubRepo);
+      // test
       expect(await mockBaseRepo.save(testObj)).to.eql(true);
       verify(mockRepo.save(testObj)).called();
+    });
+
+    it("should reject and error when it's dependency's errors", async () => {
+      // user object for test
+      const testObj: IMockType = { id: 1 };
+      // dependency
+      when(mockRepo.save(testObj)).thenThrow(new Error("TEST ERROR"));
+      const stubRepo: Repository<IMockType> = instance(mockRepo);
+      // object under test
+      mockBaseRepo.initialize(stubRepo);
+      // test
+      await expect(mockBaseRepo.save(testObj)).to.eventually.be.rejectedWith("ERROR");
+    });
+  });
+
+  describe("saveAll() (array of entities)", () => {
+    it("should call it's dependency's save() and return a boolean", async () => {
+      // user object for test
+      const testObj: IMockType = { id: 1 };
+      const testObj2: IMockType = { id: 2 };
+      const testArr: IMockType[] = [ testObj, testObj2 ];
+      // dependency
+      when(mockRepo.save(testArr)).thenReturn(Promise.resolve(testArr));
+      const stubRepo: Repository<IMockType> = instance(mockRepo);
+      // object under test
+      mockBaseRepo.initialize(stubRepo);
+      // test
+      expect(await mockBaseRepo.saveAll(testArr)).to.eql(true);
+
+      verify(mockRepo.save(testArr)).called();
+    });
+
+    it("should reject and throw when it's dependancy errors", async () => {
+      const testObj: IMockType = { id: 1 };
+      const testObj2: IMockType = { id: 2 };
+      const testArr: IMockType[] = [ testObj, testObj2 ];
+      // dependency
+      when(mockRepo.save(testArr)).thenThrow(new Error("can not save"));
+      const stubRepo: Repository<IMockType> = instance(mockRepo);
+      // object under test
+      mockBaseRepo.initialize(stubRepo);
+      // test
+      await expect(mockBaseRepo.saveAll(testArr)).to.eventually.be.rejectedWith("ERROR");
     });
   });
 

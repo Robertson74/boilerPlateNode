@@ -26,9 +26,40 @@ export abstract class BaseRepository<T> implements IRepository<T> {
     }
   }
 
-  public async save(entities: T | T[]): Promise<boolean> {
-    // this._repository.save(entities);
-    return Promise.resolve(true);
+  /**
+   * Save an entity
+   *
+   * @name save
+   * @function
+   * @author Michael Robertson
+   * @date 2017-08-03
+   * @param {entity} entity a data entity
+   * @returns {boolean} success/fail status of the save
+   */
+  public async save(entity: T): Promise<boolean> {
+    try {
+      const saveResult: T|T[] = await this._repository.save(entity);
+      if (saveResult) {
+        return Promise.resolve(true);
+      } else {
+        return Promise.resolve(false);
+      }
+    } catch (e) {
+      return Promise.reject("ERROR SAVING ENTITY: " + e);
+    }
+  }
+
+  public async saveAll(entities: T[]): Promise<boolean> {
+    try {
+      const saveResult: T[] = await this._repository.save(entities);
+      if (saveResult) {
+        return Promise.resolve(true);
+      } else {
+        return Promise.resolve(false);
+      }
+    } catch (e) {
+      return Promise.reject("ERROR SAVING ENTITIES: " + e);
+    }
   }
 
 }
