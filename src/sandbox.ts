@@ -12,21 +12,25 @@ import { MysqlConnectionCreator } from "./domain/DAL/mysql/connection";
 import { User } from "./domain/DAL/mysql/entities/User";
 import { UserRepo } from "./domain/repo/repositories/UserRepo";
 
-console.log(typeof [1, 2, 3]);
-// (async () => {
-//   const connCreator: MysqlConnectionCreator = new MysqlConnectionCreator(new DevConfig(), createConnection);
+(async () => {
+  const connCreator: MysqlConnectionCreator = new MysqlConnectionCreator(new DevConfig(), createConnection);
 
-//   const conn: Connection = await connCreator.createMysqlConnection();
+  const conn: Connection = await connCreator.createMysqlConnection();
 
-//   const userRepo: Repository<User> = conn.getRepository(User);
-//   userRepo.save();
-//   const userRepository: UserRepo = new UserRepo();
-//   userRepository.initialize(userRepo);
+  const userRepo: Repository<User> = conn.getRepository(User);
+  const userRepository: UserRepo = new UserRepo();
+  userRepository.initialize(userRepo);
 
-//   const users: User[] = await userRepository.getAll();
+  const user1 = new User();
+  user1.id = 10;
+  user1.name = "Bob";
+  const user2 = new User();
+  user2.id = 11;
+  user2.name = "Jane";
 
-//   users.forEach((user) => { console.log(user.name); });
+  const userArray: User[] = [ user1, user2 ];
 
-// })();
+  console.log(userRepository.saveAll(userArray));
+})();
 
 console.log("done");

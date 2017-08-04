@@ -18,7 +18,7 @@ before(() => {
 });
 
 describe("BaseRepository", () => {
-  // dependancy
+  // dependency
   const mockRepo: Repository<IMockType> = mock(Repository);
   // object under test
   const mockBaseRepo: MockBaseRepo = new MockBaseRepo();
