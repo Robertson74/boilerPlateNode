@@ -6,7 +6,7 @@
 
 import { Column, Entity} from "typeorm";
 import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";
-import { IUser } from "../../../../shared/IUser";
+import { IUser } from "../../../../shared/models/IUser";
 
 @Entity()
 export class User implements IUser {

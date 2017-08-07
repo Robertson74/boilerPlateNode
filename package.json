@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc && nodemon build/src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tsc && mocha -r ts-node/register --recursive build/test/",
     "tdd": "./scripts/tdd",
     "sandbox": "tsc && node ./build/src/sandbox.js"
   },

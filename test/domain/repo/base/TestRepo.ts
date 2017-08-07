@@ -5,7 +5,7 @@
  */
 
 import { expect } from "chai";
-import { BaseRepository } from "../../../../src/domain/repo/base/baseRepo";
+import { BaseRepository } from "../../../../src/domain/repo/baseInterface/baseRepo";
 import { ITestType } from "./ITestType";
 
 export class TestRepo extends BaseRepository<ITestType> {

@@ -3,7 +3,7 @@
  * @author Michael Robertson
  * @version 0.0.1
  */
-import { EntityManager } from "../../src/domain/EntityManager";
+import { EntityManager } from "../../src/domain/entityManager/EntityManager";
 
 describe("EntityManager", () => {
   describe("getRepository()", () => {
