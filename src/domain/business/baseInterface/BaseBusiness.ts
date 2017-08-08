@@ -9,7 +9,7 @@ import { IBusiness } from "./IBusiness";
 
 export class BaseBusiness<T> implements IBusiness<T> {
 
-  private _repo: BaseRepository<T>;
+  protected _repo: BaseRepository<T>;
 
   constructor(repo: BaseRepository<T>) {
     this._repo = repo;

@@ -9,8 +9,8 @@ import { expect } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import { instance, mock, verify, when } from "ts-mockito/lib/ts-mockito";
 import { BaseBusiness } from "../../../../src/domain/business/baseInterface/BaseBusiness";
-import { getStub } from "../../../../src/shared/models/utilities/GetStub";
-import { getStubThatThrows } from "../../../../src/shared/models/utilities/GetStubThatThrows";
+import { getStub } from "../../../../src/shared/utilities/GetStub";
+import { getStubThatThrows } from "../../../../src/shared/utilities/GetStubThatThrows";
 import { ITestType } from "../../repo/base/ITestType";
 import { TestRepo } from "../../repo/base/TestRepo";
 
@@ -31,19 +31,14 @@ describe("BaseBusiness", () => {
   describe("getAll()", () => {
     it("should call and return it's repositories getAll()", async () => {
       const stubRepo: TestRepo = getStub(mockRepo, "getAll", [ testObj1, testObj2 ]);
-      // object to test
       const testBaseBusiness: BaseBusiness<ITestType> = new BaseBusiness(stubRepo);
-      // test
       await testBaseBusiness.getAll();
       verify(mockRepo.getAll()).called();
     });
 
     it("should reject if the dependency errors", async() => {
-      // stub 
       const stubRepo: TestRepo = getStubThatThrows(mockRepo, "getAll", new Error("Can't get entities"));
-      // object to test
       const testBaseBusiness: BaseBusiness<ITestType> = new BaseBusiness(stubRepo);
-      // test
       await expect(testBaseBusiness.getAll()).to.eventually.be.rejectedWith("Error");
     });
   });
