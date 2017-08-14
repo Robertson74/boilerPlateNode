@@ -101,4 +101,50 @@ export abstract class BaseRepository<T> implements IRepository<T> {
     }
   }
 
+  /**
+   * Find a entity based on it's params (e.g. {name: "John"})
+   *
+   * @name findOneWhere
+   * @function
+   * @author Michael Robertson
+   * @date 2017-08-14
+   * @param {{}} params object that has {key: "value"}
+   * @returns {Entity} Entity matching find parameters
+   */
+  public async findOneWhere(params: {}): Promise<T> {
+    return await this._repository.findOne(params);
+  }
+
+  /**
+   * Find many entities based on parameters
+   *
+   * @name findWhere
+   * @function
+   * @author Michael Robertson
+   * @date 2017-08-14
+   * @param {Object} params Object defining search parameters (e.g. {name: "john"})
+   * @returns {Entity[]} Array of entities matching find parameters
+   */
+  public async findWhere(params: {}): Promise<T[]> {
+    return await this._repository.find(params);
+  }
+
+  /**
+   * Delete an entity from the database
+   *
+   * @name deleteOne
+   * @function
+   * @author Michael Robertson
+   * @date 2017-08-14
+   * @param {} entity Entity to delete
+   * @returns {Entity} Returns entity that was deleted
+   */
+  public async deleteOne(entity: T): Promise<T> {
+    return await this._repository.remove(entity);
+  }
+
+  public async delete(entities: T[]): Promise<T[]> {
+    return await this._repository.remove(entities);
+  }
+
 }

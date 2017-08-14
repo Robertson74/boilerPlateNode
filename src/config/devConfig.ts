@@ -12,6 +12,6 @@ export class DevConfig extends BaseConfig implements IConfigInterface {
   public dbPort: number = 3306;
   public dbUsername: string = "root";
   public dbPass: string = "devdb";
-  public dbName: string = "fullstack";
+  public dbName: string = "templateDB";
 
 }

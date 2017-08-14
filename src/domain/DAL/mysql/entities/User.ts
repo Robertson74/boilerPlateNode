@@ -11,7 +11,7 @@ import { IUser } from "../../../../shared/models/IUser";
 @Entity()
 export class User implements IUser {
 
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({name: "id"})
   private _id: number;
 
   get id(): number {
@@ -22,7 +22,7 @@ export class User implements IUser {
     this._id = id;
   }
 
-  @Column("text")
+  @Column({name: "name"})
   private _name: string;
 
   get name(): string {
