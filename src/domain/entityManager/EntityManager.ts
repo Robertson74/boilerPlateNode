@@ -5,6 +5,7 @@
  */
 import { Connection } from "typeorm/connection/Connection";
 import { Repository } from "typeorm/repository/Repository";
+import { BaseBusiness } from "../business/baseInterface/BaseBusiness";
 import { BaseRepository } from "../repo/baseInterface/baseRepo";
 import { repoRegistry } from "./RepoRegistry";
 
@@ -37,12 +38,12 @@ export class EntityManager {
    * @param {string} repoName Name of the repository to create from the repoRegistry
    * @returns {Repository} Repository of type BaseRepository
    */
-  public initializeRepo(repoName: string): any {
+  public initializeRepo<T>(repoName: string): BaseRepository<T> {
     // look up repo type from registry
     const repoType: any = this._repoRegistry[repoName][this._repositorySlotId];
-    const repo: any = new repoType();
+    const repo: BaseRepository<T> = new repoType();
     // get typescript repo from connection
-    const typescriptRepository: any = this._connection.getRepository(repoName);
+    const typescriptRepository: Repository<T> = this._connection.getRepository(repoName);
     // initialize the repo
     repo.initialize(typescriptRepository);
     return repo;
@@ -59,9 +60,9 @@ export class EntityManager {
    * @param {BasRepository} repo Valid repository with a connection
    * @returns {BaseBusiness} Business service ready for use
    */
-  public initializeBusiness(repoName: string, repo: any): any {
+  public initializeBusiness<T>(repoName: string, repo: any): BaseBusiness<T> {
     const businessType: any = this._repoRegistry[repoName][this._businesssSlotId];
-    const business: any = new businessType(repo);
+    const business: BaseBusiness<T> = new businessType(repo);
     return business;
   }
 
@@ -75,9 +76,9 @@ export class EntityManager {
    * @param {string} repoName Name of the repository to create
    * @returns {BusinessService}
    */
-  public composeDomain(repoName: string): any {
-    const repo: any = this.initializeRepo(repoName);
-    const business: any = this.initializeBusiness(repoName, repo);
+  public composeDomain<T>(repoName: string): BaseBusiness<T> {
+    const repo: BaseRepository<T> = this.initializeRepo(repoName);
+    const business: BaseBusiness<T> = this.initializeBusiness(repoName, repo);
     return business;
   }
 
@@ -93,7 +94,7 @@ export class EntityManager {
    * @param {string} repoName Name of the repo to retreive
    * @returns {BusinessService}
    */
-  public getRepository(repoName: string): any {
+  public getRepository<T>(repoName: string): BaseBusiness<T> {
     // check that the requested repository exists in the registry
     if (!this._repoRegistry[repoName]) {
       throw new RangeError("Requested repository does not exists");
@@ -103,7 +104,7 @@ export class EntityManager {
       return this._repoPool[repoName];
     } else {
     // compose the repository
-      const domain: any = this.composeDomain(repoName);
+      const domain: BaseBusiness<T> = this.composeDomain(repoName);
     // add to repo pool
       this._repoPool[repoName] = domain;
     // return the repo

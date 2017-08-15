@@ -13,8 +13,8 @@ import { Repository } from "typeorm/repository/Repository";
 import { BaseConfig } from "../../../src/config/baseConfig";
 import { MysqlConnectionCreator } from "../../../src/domain/DAL/mysql/connection";
 import { EntityManager } from "../../../src/domain/entityManager/EntityManager";
-import { IRepository } from "../../../src/domain/repo/baseInterface/IRepository";
 import { BaseRepository } from "../../../src/domain/repo/baseInterface/baseRepo";
+import { IRepository } from "../../../src/domain/repo/baseInterface/IRepository";
 import { getStub } from "../../../src/shared/utilities/GetStub";
 import { getStubThatThrows } from "../../../src/shared/utilities/GetStubThatThrows";
 import { TestBusiness } from "../business/TestBusiness";
@@ -85,8 +85,13 @@ describe("EntityManager", () => {
   describe("composeDomain()", () => {
     it("should return an initialized business layer service", () => {
       const testEntityManager: EntityManager = new EntityManager(instance(mockConnection), fakeRepoRegistry);
-      testEntityManager.initializeRepo = () => { return instance(mockRepository); };
-      testEntityManager.initializeBusiness = () => { return instance(mockBusiness); };
+      // testEntityManager.initializeRepo = (repoName: string) => { return instance(mockRepository); };
+      // testEntityManager.initializeRepo = <T>(repoName: string): BaseRepository<T> => {
+      //   const stubRepository: BaseRepository<T> = instance(mockRepository);
+      //   return stubRepository;
+      // };
+
+      // testEntityManager.initializeBusiness = () => { return instance(mockBusiness); };
       const repoName: string = "testRepo";
       const business: TestBusiness = testEntityManager.composeDomain(repoName);
       expect(business).to.be.instanceOf(Object);

@@ -18,10 +18,6 @@ export class User implements IUser {
     return this._id;
   }
 
-  set id(id: number) {
-    this._id = id;
-  }
-
   @Column({name: "name"})
   private _name: string;
 
