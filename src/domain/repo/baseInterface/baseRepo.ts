@@ -48,11 +48,7 @@ export abstract class BaseRepository<T> implements IRepository<T> {
    * @returns {entity} the entity
    */
   public async getById(id: number): Promise<T | undefined> {
-    try {
-      return await this._repository.findOneById(id);
-    } catch (e) {
-      return Promise.reject("ERROR");
-    }
+    return await this._repository.findOneById(id);
   }
 
   /**
@@ -137,14 +133,42 @@ export abstract class BaseRepository<T> implements IRepository<T> {
    * @author Michael Robertson
    * @date 2017-08-14
    * @param {} entity Entity to delete
-   * @returns {Entity} Returns entity that was deleted
+   * @returns {boolean} Boolean result of the delete operation
    */
-  public async deleteOne(entity: T): Promise<T> {
-    return await this._repository.remove(entity);
+  public async deleteOne(entity: T): Promise<boolean> {
+    try {
+      const deleteResults: T = await this._repository.remove(entity);
+      if(deleteResults) {
+        return Promise.resolve(true);
+      } else {
+        return Promise.reject(false);
+      }
+    } catch (e) {
+      return Promise.reject("Error deleting entity: " + e);
+    }
   }
 
-  public async delete(entities: T[]): Promise<T[]> {
-    return await this._repository.remove(entities);
+  /**
+   * Delete many entities
+   *
+   * @name delete
+   * @function
+   * @author Michael Robertson
+   * @date 2017-08-14
+   * @param {entity[]} entities Array of entities to delete
+   * @returns {boolean} Boolean result of the delete operation
+   */
+  public async delete(entities: T[]): Promise<boolean> {
+    try {
+      const deleteResults: T[] = await this._repository.remove(entities);
+      if (deleteResults) {
+        return Promise.resolve(true);
+      } else {
+        return Promise.resolve(false);
+      }
+    } catch (e) {
+      return Promise.reject("Error deleting entities: " + e);
+    }
   }
 
 }

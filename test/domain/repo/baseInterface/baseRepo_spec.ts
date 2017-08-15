@@ -24,6 +24,7 @@ const testObj1: ITestType = { id: 1 };
 testObj1.id = 1;
 const testObj2: ITestType = { id: 2 };
 testObj2.id = 2;
+const testObjArr: ITestType[] = [ testObj1, testObj2 ];
 /* tslint:enable */
 
 // mock dependancy
@@ -71,22 +72,19 @@ describe("BaseRepository", () => {
   });
 
   describe("getById()", () => {
-    // setup
-    const testIdOne: number = 1;
-    const testIdTwo: number = 2;
-    when(mockRepo.findOneById(testIdOne)).thenReturn(Promise.resolve(<ITestType> {id: 1}));
-    when(mockRepo.findOneById(testIdTwo)).thenThrow(new Error("can't connect to the database"));
-    const stubRepo: Repository<ITestType> = instance(mockRepo);
-    // Object under test
-    const nothingResults: void = mockBaseRepo.initialize(stubRepo);
-    it("should return an object on successful dependency call", async () => {
-      const findOneResults: ITestType = await mockBaseRepo.getById(1);
-      verify(mockRepo.findOneById(1)).called();
-      expect(findOneResults).to.be.a("object");
+    it("should call it's dependancy's findOneById()", async () => {
+      const stubRepo: Repository<ITestType> = getStub(mockRepository, "findOneById", Promise.resolve(testObj1), 1);
+      testBaseRepository.initialize(stubRepo);
+      const findResults: ITestType = await testBaseRepository.getById(1);
+      verify(mockRepository.findOneById(1)).called();
+      expect(findResults).to.eql(testObj1);
     });
 
     it("should throw an error on failed dependency call", async () => {
-      await expect(mockBaseRepo.getById(testIdTwo)).to.eventually.be.rejectedWith("ERROR");
+      const stubRepo: Repository<ITestType> = getStub(mockRepository, "findOneById", Promise.reject("Error"), 1);
+      testBaseRepository.initialize(stubRepo);
+      await expect(testBaseRepository.getById(1)).to.eventually.be.rejectedWith("Error");
+      verify(mockRepository.findOneById(1)).called();
     });
   });
 
@@ -196,11 +194,18 @@ describe("BaseRepository", () => {
     it("should call it's dependency's remove()", async () => {
       const stubRepo: Repository<ITestType> = getStub(mockRepository, "remove", Promise.resolve(testObj1), testObj1);
       testBaseRepository.initialize(stubRepo);
-      expect(await testBaseRepository.deleteOne(testObj1)).to.eql(testObj1);
+      await testBaseRepository.deleteOne(testObj1);
       verify(mockRepository.remove(testObj1)).called();
     });
 
-    it("should reject and throw when it's dependency rejects", async() => {
+    it("should return true on successful delete", async () => {
+      const stubRepo: Repository<ITestType> = getStub(mockRepository, "remove", Promise.resolve(testObj1), testObj1);
+      testBaseRepository.initialize(stubRepo);
+      expect(await testBaseRepository.deleteOne(testObj1)).to.be.true;
+      verify(mockRepository.remove(testObj1)).called();
+    });
+
+    it("should reject when it's dependency rejects", async() => {
       const stubRepo: Repository<ITestType> = getStub(mockRepository, "remove", Promise.reject("Error"), testObj1);
       testBaseRepository.initialize(stubRepo);
       await expect(testBaseRepository.deleteOne(testObj1)).to.eventually.be.rejectedWith("Error");
@@ -208,24 +213,33 @@ describe("BaseRepository", () => {
   });
 
   describe("delete()", () => {
-    const testParams: ITestType[] = [ testObj1, testObj2 ];
-
     it("should call it's dependency's remove()", async() => {
       const stubRepo: Repository<ITestType> = getStub(
         mockRepository,
         "remove",
-        Promise.resolve(testParams),
-        testParams
+        Promise.resolve(testObjArr),
+        testObjArr
       );
       testBaseRepository.initialize(stubRepo);
-      expect(await testBaseRepository.delete(testParams)).to.eql(testParams);
-      verify(mockRepository.remove(testParams)).called();
+      await testBaseRepository.delete(testObjArr);
+      verify(mockRepository.remove(testObjArr)).called();
+    });
+
+    it("should return true on successful delete", async () => {
+      const stubRepo: Repository<ITestType> = getStub(
+        mockRepository,
+        "remove",
+        Promise.resolve(testObjArr),
+        testObjArr
+      );
+      testBaseRepository.initialize(stubRepo);
+      expect(await testBaseRepository.delete(testObjArr)).to.be.true;
     });
 
     it("should reject and throw when dependency rejects", async() => {
-      const stubRepo: Repository<ITestType> = getStub(mockRepository, "remove", Promise.reject("Error"), testParams);
+      const stubRepo: Repository<ITestType> = getStub(mockRepository, "remove", Promise.reject("Error"), testObjArr);
       testBaseRepository.initialize(stubRepo);
-      await expect(testBaseRepository.delete(testParams)).to.eventually.be.rejectedWith("Error");
+      await expect(testBaseRepository.delete(testObjArr)).to.eventually.be.rejectedWith("Error");
     });
   });
 });
