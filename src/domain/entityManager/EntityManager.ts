@@ -1,5 +1,5 @@
 /**
- * @file repoContainer.ts -  description 
+ * @file EntityManager.ts - Manages all domain services and ensures they share the same connection
  * @author Michael Robertson
  * @version 0.0.1
  */
@@ -42,7 +42,7 @@ export class EntityManager {
     const repoType: any = this._repoRegistry[repoName][this._repositorySlotId];
     const repo: any = new repoType();
     // get typescript repo from connection
-    const typescriptRepository: any = this._connection.getRepository(repoType);
+    const typescriptRepository: any = this._connection.getRepository(repoName);
     // initialize the repo
     repo.initialize(typescriptRepository);
     return repo;
@@ -113,52 +113,3 @@ export class EntityManager {
   /* tslint:enable */
 
 }
-
-// TODO composeDomain
-// call initrepo
-// call initbuss
-// return B
-// TODO getRepo
-// if repopoo[name]
-//  return repopool
-//  else compose domain
-//  update repo pool
-//  return domain
-
-// private _repoStack: { [name: string]: typeof BaseRepository } = {};
-// private _mysqlConnection: Connection;
-
-// public async initialize(): Promise <void> {
-//   const config: DevConfig = new DevConfig();
-//   const connectionCreator: MysqlConnectionCreator = new MysqlConnectionCreator();
-//   const options = mysqlDriverOptions;
-//   this._mysqlConnection = await connectionCreator.createConnection(options);
-//   return;
-// }
-
-// public getRepo(name: string): any {
-// if (!this._repoRegistry[name]) {
-// throw new ReferenceError;
-// }
-// if (this._repoStack[name]) {
-// 	return this._repoStack[name];
-// } else {
-// 	let repoType = this._repoRegistry[name][0];
-// 	let repo = new repoType();
-// 	repo.initialize(this._mysqlConnection);
-
-// 		let businessType = this._repoRegistry[name][1];
-// 		let business = new businessType(repo);
-
-// 		this._repoStack[name] = business;
-
-// 		return business;
-// 	}
-
-// }
-
-// readonly _repoRegistry: any = {
-//   "store": [  StoreRepository, StoreBusiness ]
-// 		// END REGISTRY#
-// };
-// }

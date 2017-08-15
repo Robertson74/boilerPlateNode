@@ -7,7 +7,7 @@ import { expect } from "chai";
 import { instance, mock, when } from "ts-mockito";
 import { Connection, createConnection } from "typeorm";
 import { DevConfig } from "../../../../src/config/devConfig";
-import { IConfigInterface } from "../../../../src/config/interface/IconfigInterface";
+import { IConfig } from "../../../../src/config/interface/Iconfig";
 import { MysqlConnectionCreator } from "../../../../src/domain/DAL/mysql/connection";
 
 /* tslint:disable:no-magic-numbers */

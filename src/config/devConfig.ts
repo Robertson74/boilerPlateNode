@@ -4,9 +4,9 @@
  * @version 0.0.1
  */
 import { BaseConfig } from "./baseConfig";
-import { IConfigInterface } from "./interface/IconfigInterface";
+import { IConfig } from "./interface/Iconfig";
 
-export class DevConfig extends BaseConfig implements IConfigInterface {
+export class DevConfig extends BaseConfig {
 
   public dbHost: string = "localhost";
   public dbPort: number = 3306;

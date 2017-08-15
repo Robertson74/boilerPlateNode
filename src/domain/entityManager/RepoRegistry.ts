@@ -8,6 +8,8 @@ import { UserBusiness } from "../business/UserBusiness";
 import { BaseRepository } from "../repo/baseInterface/baseRepo";
 import { UserRepo } from "../repo/UserRepo";
 
+// format of registry entries:
+// Model: [ RepoClass, BusinessClass]
 export const repoRegistry: {} = {
-  users: [ UserRepo, UserBusiness ]
+  User: [ UserRepo, UserBusiness ]
 };

@@ -3,8 +3,7 @@
  * @author Michael Robertson
  * @version 0.0.1
  */
-import { IConfigInterface } from "./interface/IconfigInterface";
+import { IConfig } from "./interface/Iconfig";
 
 export class BaseConfig {
-
 }

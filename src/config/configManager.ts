@@ -5,7 +5,7 @@
  */
 import { BaseConfig } from "./baseConfig";
 import { DevConfig } from "./devConfig";
-import { IConfigInterface } from "./interface/IconfigInterface";
+import { IConfig } from "./interface/Iconfig";
 
 export class ConfigManager {
   private _env: string;

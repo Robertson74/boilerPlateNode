@@ -5,8 +5,8 @@
  */
 import "reflect-metadata";
 import { Connection, createConnection } from "typeorm";
-import { DevConfig } from "../../../config/devConfig";
-import { IConfigInterface } from "../../../config/interface/IconfigInterface";
+import { BaseConfig } from "../../../config/baseConfig";
+import { IConfig } from "../../../config/interface/Iconfig";
 
 /**
  * Creates a TypeORM Mysql connection
@@ -17,10 +17,10 @@ import { IConfigInterface } from "../../../config/interface/IconfigInterface";
  */
 export class MysqlConnectionCreator {
 
-  private _config: IConfigInterface;
+  private _config: IConfig;
   private _createConnection: Function;
 
-  constructor(config: DevConfig, createConnection: Function) {
+  constructor(config: IConfig, createConnection: Function) {
     this._config = config;
     this._createConnection = createConnection;
   }
