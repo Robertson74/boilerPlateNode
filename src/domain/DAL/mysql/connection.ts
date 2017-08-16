@@ -5,7 +5,6 @@
  */
 import "reflect-metadata";
 import { Connection, createConnection } from "typeorm";
-import { BaseConfig } from "../../../config/baseConfig";
 import { IConfig } from "../../../config/interface/Iconfig";
 
 /**
@@ -34,11 +33,10 @@ export class MysqlConnectionCreator {
       password: this._config.dbPass,
       database: this._config.dbName,
       entities: [
-        "build/src/domain/DAL/mysql/entities/*.js"
+        this._config.entitiesDir
       ],
       autoSchemaSync: true,
     });
     return conn;
   }
-
 }

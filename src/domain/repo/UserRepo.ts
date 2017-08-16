@@ -3,7 +3,7 @@
  * @author Michael Robertson
  * @version 0.0.1
  */
-import { User } from "../DAL/mysql/entities/User";
+import { User } from "../../shared/entities/User";
 import { BaseRepository } from "./baseInterface/baseRepo";
 
 export class UserRepo extends BaseRepository<User> {

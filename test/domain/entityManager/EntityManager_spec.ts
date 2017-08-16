@@ -28,10 +28,6 @@ describe("EntityManager", () => {
     chai.use(chaiAsPromised);
   });
 
-  // test return objects
-  // const testObj1: ITestType = {id: 1};
-  // const testObj2: ITestType = {id: 2};
-
   // fake repo registry
   const fakeRepoRegistry: {} = { testRepo: [TestRepo, TestBusiness ] };
   // dependency mocks
@@ -54,8 +50,6 @@ describe("EntityManager", () => {
     reset(mockRepository);
     reset(mockBusiness);
   });
-
-  // object under test
 
   describe("initializeRepo()", () => {
     it("should return an initialized repository", () => {
