@@ -1,27 +1,40 @@
-import * as http from "http";
+/**
+ * @file server.ts - Main entry point for application
+ * @author Michael Robertson
+ * @version 0.0.1
+ */
 import * as debug from "debug";
-
+import * as http from "http";
 import App from "./app";
 
 debug("ts-express:server");
 
-const port = normalizePort(process.env.PORT || 3000);
+const defaultPort: number = 3000;
+const baseTen: number = 10;
+
+const port: number|string|boolean = normalizePort(process.env.PORT || defaultPort);
 App.set("port", port);
 
-const server = http.createServer(App);
+const server: http.Server = http.createServer(App);
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
 
 function normalizePort(val: number|string): number|string|boolean {
-  let port: number = (typeof val === "string") ? parseInt(val, 10) : val;
-  if (isNaN(port)) return val;
-  else if (port >= 0) return port;
-  else return false;
+  const basePort: number = (typeof val === "string") ? parseInt(val, baseTen) : val;
+  if (isNaN(basePort)) {
+    return val;
+  } else if (basePort >= 0) {
+    return basePort;
+  } else {
+    return false;
+  }
 }
 
 function onError(error: NodeJS.ErrnoException): void {
-  if (error.syscall !== "listen") throw error;
+  if (error.syscall !== "listen") {
+    throw error;
+  }
   let bind = (typeof port === "string") ? "Pipe " + port : "Port " + port;
   switch (error.code) {
       case "EACCES":
@@ -39,7 +52,7 @@ function onError(error: NodeJS.ErrnoException): void {
 
 function onListening(): void {
   console.log("Listening on port " + port);
-  let addr = server.address();
+  const addr = server.address();
   let bind = (typeof addr === "string") ? `pipe ${addr}` : `port ${addr.port}`;
   debug(`Listening on ${bind}`);
 }
