@@ -17,14 +17,24 @@ import { User } from "./shared/entities/User";
 import * as inquirer from 'inquirer';
 
 
-const testQuestion = {
+const question1 = {
   type: "input",
   name: "testQuestion",
   message: "this is a test question",
   default: "default input"
 };
-(() => {
-  inquirer.prompt(testQuestion);
+
+const question2 = {
+  type: "input",
+  name: "testQuestion2",
+  message: "this is another test question",
+  default: "default input"
+};
+
+(async () => {
+  // const results = await inquirer.prompt();
+  const results = await inquirer.prompt([question1, question2]);
+  console.log(results);
 })();
 
 // (async () => {
