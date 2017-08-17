@@ -14,17 +14,29 @@ import { EntityManager } from "./domain/entityManager/EntityManager";
 import { repoRegistry } from "./domain/entityManager/RepoRegistry";
 import { Connection } from "typeorm/connection/Connection";
 import { User } from "./shared/entities/User";
+import * as inquirer from 'inquirer';
 
-(async () => {
-  const creator: MysqlConnectionCreator = new MysqlConnectionCreator(new DevConfig(), createConnection);
-  const conn: Connection = await creator.createMysqlConnection()
-  const em: EntityManager = new EntityManager(conn, repoRegistry);
 
-  const userOne: User = new User();
-  userOne.name = "Bob";
-  await em.getRepository("User").save(userOne);
-  console.log(await em.getRepository("User").getAll());
+const testQuestion = {
+  type: "input",
+  name: "testQuestion",
+  message: "this is a test question",
+  default: "default input"
+};
+(() => {
+  inquirer.prompt(testQuestion);
 })();
+
+// (async () => {
+//   const creator: MysqlConnectionCreator = new MysqlConnectionCreator(new DevConfig(), createConnection);
+//   const conn: Connection = await creator.createMysqlConnection()
+//   const em: EntityManager = new EntityManager(conn, repoRegistry);
+
+//   const userOne: User = new User();
+//   userOne.name = "Bob";
+//   await em.getRepository("User").save(userOne);
+//   console.log(await em.getRepository("User").getAll());
+// })();
 
 // (async () => {
 //   const testVar = 100;
