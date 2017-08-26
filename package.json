@@ -8,7 +8,8 @@
     "test": "tsc && mocha -r ts-node/register --recursive build/test/",
     "tdd": "./scripts/tdd",
     "sandbox": "tsc && node ./build/src/sandbox.js",
-    "clearBuild": "rm -rf ./build/"
+    "clearBuild": "rm -rf ./build/",
+    "generateRepo": "tsc && node ./build/.michaelSoft/repoGen/main.js"
   },
   "author": "",
   "license": "ISC",

@@ -11,14 +11,15 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": false
-    },
+  },
   "include": [
-      "src/**/*.ts",
-      "src/*.ts",
-      "test/*.ts",
-      "test/**/*.ts"
-    ],
+    "./.michaelSoft/**/*.ts",
+    "src/**/*.ts",
+    "src/*.ts",
+    "test/*.ts",
+    "test/**/*.ts"
+  ],
   "exclude": [
-      "node_modules"
+    "node_modules"
     ]
 }
