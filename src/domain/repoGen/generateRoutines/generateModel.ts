@@ -1,12 +1,7 @@
-// thoughts
-// need
-// name of the model
-// properties loop 
-// get property name
-// get property type
-// is optional?
-// readonly?
-import * as inquirer from 'inquirer';
+/* tslint:disable */
+import * as inquirer from "inquirer";
+import * as fs from "fs-extra";
+import { repoGenConfig } from "../repoGenConfig";
 
 console.log("Generating Model..");
 
@@ -30,9 +25,10 @@ type prop = {
   readOnly: boolean,
   optional: boolean
 };
+let newProp: prop = {propertyName: "", propertyType: "", readOnly: false, optional: false};
 let model: { 
   name: string,
-  props: prop[]
+    props: prop[]
 } = {
   name: "",
   props: []
@@ -45,7 +41,9 @@ let propAttritbutesQ: inquirer.Question;
 let okayWithModelQ: inquirer.Question;
 let morePropertiesQ: inquirer.Question;
 
-const setupQuetsions: Function = () => {
+const setupQuestions: Function = () => {
+
+  newProp = {propertyName: "", propertyType: "", readOnly: false, optional: false};
 
   classNameQ = {
     type: "input",
@@ -86,16 +84,12 @@ const setupQuetsions: Function = () => {
   morePropertiesQ = {
     type: "confirm",
     name: "answer",
-    message: "Would you like to add a properties?:",
+    message: "Would you like to add a property:",
   };
 }
 
 
 (async () => {
-
-  setupQuetsions();
-
-  let newProp: prop = {propertyName: "", propertyType: "", readOnly: false, optional: false};
 
   // ask for model name
   let getModelName: Function = async () => {
@@ -122,16 +116,38 @@ const setupQuetsions: Function = () => {
     if (propAttritbutesA.answer.indexOf("optional") > -1) { newProp.optional = true; };
   };
 
+  // ask if more properties
+  let moreProps = async () => {
+    let morePropertiesA: inquirer.Answers = await inquirer.prompt([morePropertiesQ]);
+    anotherProp = morePropertiesA.answer;
+  }
+
+  // ask if happy with the model
+  let finishedWithModel = async () => {
+    anotherProp = true;
+    let okayWithModelA: inquirer.Answers = await inquirer.prompt([okayWithModelQ]);
+    happyWithModel = okayWithModelA.answer;
+    if (!happyWithModel) { console.log("Let's try again"); }
+  }
+
+  // create the display model
   let displayModel: Function = (): string => {
     let displayProperties: string = ""; 
-    model.props.forEach((val: prop) => {
-      displayProperties+= val.propertyName + ": "
-      displayProperties+= val.propertyType
-      displayProperties+= ";"
+
+    // build properties
+    model.props.forEach((val: prop, index: number, arr: prop[]) => {
+      if (val.readOnly) { displayProperties+= "readonly "; }
+      displayProperties+= val.propertyName ;
+      if (val.optional) { displayProperties+= "?"; }
+      displayProperties+= ": ";
+      displayProperties+= val.propertyType;
+      displayProperties+= ";";
+      if (index != arr.length -1) { displayProperties+= "\n        " }
     });
-    console.log(displayProperties);
+
+    // build model
     let displayModel: string =
-    `model------------------------------------- 
+      `model------------------------------------- 
       ${ model.name } {
         ${ displayProperties }
       }
@@ -139,45 +155,27 @@ const setupQuetsions: Function = () => {
     return displayModel;
   }
 
-  await getModelName();
-  await getPropName();
-  await getPropType();
-  await getPropAttributes();
-  model.props.push(newProp);
-  console.log(displayModel());
-  console.log(newProp);
+  // collect info from user
+  while (happyWithModel == false) {
+    model.name = "";
+    model.props = [];
+    setupQuestions();
+    await getModelName();
+    while (anotherProp == true) {
+      console.log("Creating a property for " + model.name);
+      setupQuestions();
+      await getPropName();
+      await getPropType();
+      await getPropAttributes();
+      model.props.push(newProp);
+      console.log(displayModel());
+      await moreProps();
+    }
+    await finishedWithModel();
+  }
 
-  // const classNameA: inquirer.Answers = await inquirer.prompt([classNameQ]);
-  // header += "\nModel ----------------------------------------\n " + classNameA.answer + " {\n";
-
-  // while (happyWithModel == false) {
-  //   header = "";
-  //   while (anotherProp == true) {
-  //     setupQuetsions();
-
-  //     getPropName();
-  //     getPropType();
-  //     getAdditionalInfo();
-  //     AskIfDone();
-  //     // ask for property name
-  //     propNameQ.message = header + "\n" + propNameQ.message + "\n";
-  //     let propNameA: inquirer.Answers = await inquirer.prompt([propNameQ]);
-  //     header += "   " + propNameA.answer + ": ";
-
-  //     // ask for property type
-  //     propTypeQ.message = header + "\n\n" + propTypeQ.message + "\n";
-  //     let propTypeA: inquirer.Answers = await inquirer.prompt([propTypeQ]);
-  //     header += propTypeA.answer + ";\n"
-
-  //     // ask if done
-  //     morePropertiesQ.message = header + "\n" + morePropertiesQ.message + "\n";
-  //     let morePropertiesA: inquirer.Answers = await inquirer.prompt([morePropertiesQ]);
-  //     anotherProp = morePropertiesA.answer;
-  //     console.log(morePropertiesA.answer);
-  //   }
-
-  //   okayWithModelQ.message = "------------\n" + header + "  }\n" + okayWithModelQ.message + "\n";
-  //   let okayWithModelA: inquirer.Answers = await inquirer.prompt([okayWithModelQ]);
-  // }
+  // write out the model
+  console.log(await fs.writeFile(repoGenConfig.modelDir + model.name + ".ts", displayModel()));
+  console.log("Model(Interface) generated in : " + repoGenConfig.modelDir);
 
 })();
