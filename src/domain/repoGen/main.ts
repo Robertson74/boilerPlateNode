@@ -1,31 +1,32 @@
+/* tslint:disable */
 import * as inquirer from 'inquirer';
-import { generateRepository } from "./generateRoutines/generateRepository";
-// make the interface
-// make the class
-// make the bussiness layer
-// make the repo layer
-// update repo registry
-//
-// console.log(config);
-// console.log("Starting Generation");
+import { generateInterface } from "./generateRoutines/generateModel";
 
-// const createChoices = [ 
-//   "Full Repository"
-// ];
+let whatToCreateQ: inquirer.Question;
 
-// const createQuestion = {
-//   type: "list",
-//   name: "createAnswer",
-//   message: "Create what?: ",
-//   choices: createChoices,
-//   default: "default input"
-// };
+let setupQuestions: Function = () => {
+  whatToCreateQ = {
+    type: "list",
+    name: "answer",
+    message: "What objects should be created?",
+    choices: [
+      "Interface"
+    ]
+  };
+};
 
-// (async () => {
-//   const results: inquirer.Answers = await inquirer.prompt([createQuestion]);
-//   if (results["createAnswer"] == createChoices[0]) {
-//     let generationResult = await generateRepository();
-//   } else {
-//     console.log("Error...");
-//   }
-// })();
+
+(async () => {
+  setupQuestions();
+  let whatToCreateA: inquirer.Answers = await inquirer.prompt([whatToCreateQ]);
+  switch (whatToCreateA.answer) {
+
+    case 'Interface':
+      await generateInterface();
+      break;
+    
+    default:
+      console.error("ERROR");
+  }
+})();
+// ask what to create
