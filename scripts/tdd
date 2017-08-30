@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+var gaze_run_interrupt = require('gaze-run-interrupt');
+
+gaze_run_interrupt('{src,test}/**/*.ts', [
+  {
+    command: 'tsc'
+  }, {
+    command: 'mocha',
+    args: ['-r', 'ts-node/register', '--recursive', 'test/**/*.ts', '--reporter', 'min' ]
+  }
+]);
+
