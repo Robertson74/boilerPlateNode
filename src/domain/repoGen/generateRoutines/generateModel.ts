@@ -2,6 +2,7 @@
 import * as inquirer from "inquirer";
 import * as fs from "fs-extra";
 import { repoGenConfig } from "../repoGenConfig";
+import { Model } from "../types";
 
 export const generateInterface: Function = async () => {
 
@@ -24,18 +25,15 @@ export const generateInterface: Function = async () => {
   let header: string = "";
   let happyWithModel: boolean = false;
   let writeInterface: boolean = false;
-  let newProp: prop = {propertyName: "", propertyType: "", readOnly: false, optional: false};
-  type prop = {
+  let newProp: Prop = {propertyName: "", propertyType: "", readOnly: false, optional: false};
+  type Prop = {
     propertyName: string,
     propertyType: string,
     readOnly: boolean,
     optional: boolean
   };
   // main model
-  let model: { 
-    name: string,
-      props: prop[]
-  } = {
+  let model: Model = {
     name: "",
     props: []
   };
@@ -112,6 +110,7 @@ export const generateInterface: Function = async () => {
       type: "input",
       name: "answer",
       message: "Where to write?",
+      validate: noSpaces,
       default: repoGenConfig.modelDir
     }
 
@@ -162,7 +161,7 @@ export const generateInterface: Function = async () => {
     // build properties
     let buildDisplayProperties = () => {
       let displayProperties: string = ""; 
-      model.props.forEach((val: prop, index: number, arr: prop[]) => {
+      model.props.forEach((val: Prop, index: number, arr: Prop[]) => {
         displayProperties+= "  ";
         if (val.readOnly) { displayProperties+= "readonly "; }
         displayProperties+= val.propertyName ;
