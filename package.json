@@ -31,10 +31,7 @@
     "install": "^0.10.1",
     "mocha": "^3.4.2",
     "morgan": "^1.8.2",
-<<<<<<< HEAD
     "mysql": "^2.14.1",
-=======
->>>>>>> be2148f938a85d13f825278284c6f3e7b5f0bb6c
     "ts-mockito": "^2.0.2",
     "ts-node": "^3.2.0",
     "typeorm": "0.1.0-alpha.31",

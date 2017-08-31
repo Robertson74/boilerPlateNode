@@ -32,6 +32,7 @@ export const generateInterface: Function = async () => {
     readOnly: boolean,
     optional: boolean
   };
+
   // main model
   let model: Model = {
     name: "",
@@ -118,10 +119,11 @@ export const generateInterface: Function = async () => {
   }
 
 
-  (async () => {
+  return await (async () => {
 
     // ask for model name
     let getModelName: Function = async () => {
+
       let classNameA: inquirer.Answers = await inquirer.prompt([classNameQ]);
       model.name = classNameA.answer;
     }
@@ -240,6 +242,6 @@ export const generateInterface: Function = async () => {
       await fs.writeFile(repoGenConfig.modelDir + "I" + model.name + ".ts", writeModel());
       console.log("Model(Interface) generated in : " + repoGenConfig.modelDir);
     }
-
+    return model;
   })();
 }

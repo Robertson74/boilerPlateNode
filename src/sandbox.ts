@@ -12,7 +12,7 @@ console.log(testing.match(/e/));
 
 import "reflect-metadata";
 import {createConnection} from "typeorm";
-import { Transaction } from "./domain/repoGen/testEntity/Transaction";
+import { Mid } from "./domain/repoGen/testEntity/Mid";
 
 createConnection({
   type: "mysql",
@@ -24,7 +24,7 @@ createConnection({
     database: "repoGen"
   },
   entities: [
-    Transaction
+    Mid
   ],
   autoSchemaSync: true,
 }).then(connection => {

@@ -261,7 +261,7 @@ export let generateEntity: Function = async (generatedModel: Model) => {
     }
   }
 
-  (async () => {
+  return await (async () => {
     generatedEntity.name = generatedModel.name;
     await askIfDbEntity(generatedEntity);
     if (isDbEntity) {
@@ -299,6 +299,6 @@ export let generateEntity: Function = async (generatedModel: Model) => {
       await fs.writeFile(repoGenConfig.entityDir + "/" + generatedEntity.name + ".ts", buildWriteEntity(generatedEntity));
     }
     console.log(buildWriteEntity(generatedEntity));
+    return generatedEntity;
   })();
-
 }

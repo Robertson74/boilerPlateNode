@@ -1,44 +1,46 @@
 /* tslint:disable */
-import { genEntity, Model, Prop } from "../types";
-import { generateEntity } from "./generateEntity";
 import * as inquirer from "inquirer";
+import { generateEntity } from "./generateEntity";
+import { generateInterface } from "./generateModel";
+import { genEntity, Model, Prop } from "../types";
 
 console.log("REPOGEN");
 export const generateRepository: Function = async () => {
   console.log("generate repo");
 
-  let id: Prop = {
-    optional: false,
-    readOnly: true,
-    propertyName: "id",
-    propertyType: "number"
-  }
+  // let id: Prop = {
+  //   optional: false,
+  //   readOnly: true,
+  //   propertyName: "id",
+  //   propertyType: "number"
+  // }
 
-  let amount: Prop = {
-    optional: false,
-    readOnly: false,
-    propertyName: "amount",
-    propertyType: "number"
-  }
+  // let amount: Prop = {
+  //   optional: false,
+  //   readOnly: false,
+  //   propertyName: "amount",
+  //   propertyType: "number"
+  // }
 
-  let midId: Prop = {
-    optional: false,
-    readOnly: false,
-    propertyName: "midId",
-    propertyType: "string"
-  }
+  // let midId: Prop = {
+  //   optional: false,
+  //   readOnly: false,
+  //   propertyName: "midId",
+  //   propertyType: "string"
+  // }
 
-  let model: Model = {
-    name: "Transaction",
-    writeDir: "./src/domain/repoGen/test/",
-    props: []
-  };
-  model.props.push(id);
-  model.props.push(amount);
-  model.props.push(midId);
+  // let model: Model = {
+  //   name: "Transaction",
+  //   writeDir: "./src/domain/repoGen/test/",
+  //   props: []
+  // };
+  // model.props.push(id);
+  // model.props.push(amount);
+  // model.props.push(midId);
 
-  console.log("Generating...");
-  let genEntity = await generateEntity(model);
+  // console.log("Generating...");
+  // let model: Model = await generateInterface();
+  // let genEntity = await generateEntity(model);
 };
 
 // confirm making an entity
@@ -50,7 +52,9 @@ let askToContinue: Function = async () => {
   await inquirer.prompt(askToContinueQ);
 
 };
+
 (async () => {
   await askToContinue();
-  console.log(await generateRepository());
+  let model: Model = await generateInterface();
+  let genEntity: genEntity = await generateEntity(model);
 })();
