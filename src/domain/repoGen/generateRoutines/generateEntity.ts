@@ -187,11 +187,11 @@ export let generateEntity: Function = async (generatedModel: genModel) => {
 
   // build header imports
   let buildHeaderImports: Function = (): string => {
-    let headers: string = 
-      `import { Column } from "typeorm/decorator/columns/Column";\n`
-      + `import { PrimaryColumn } from "typeorm/decorator/columns/PrimaryColumn";\n`
-      + `import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";\n\n`
-    + `import { Entity } from "typeorm/decorator/entity/Entity";\n`;
+    let headers: string = ``;
+    headers+= `import { Column } from "typeorm/decorator/columns/Column";\n`;
+    headers+= `import { PrimaryColumn } from "typeorm/decorator/columns/PrimaryColumn";\n`;
+    headers+= `import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";\n`;
+    headers+= `import { Entity } from "typeorm/decorator/entity/Entity";\n\n`;
     return headers;
   };
 
