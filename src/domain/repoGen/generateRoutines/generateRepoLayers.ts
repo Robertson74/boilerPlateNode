@@ -26,7 +26,7 @@ export let generateRepoLayers: Function = async (ent: genEntity) => {
     let writeBus: string = ``;
     let entPath = getRelativePath(busDir, ent.writeDir);
     let baseBusPath = getRelativePath(busDir, repoGenConfig.baseBusDir);
-    writeBus+= `import { ${ent.name} } from "${entPath}";\n`;
+    writeBus+= `import { ${ent.name} } from "${entPath}${ent.name}";\n`;
     writeBus+= `import { BaseBusiness } from "${baseBusPath}BaseBusiness";\n`;
     writeBus+= `\n`;
     writeBus+= `export class ${ent.name}Business extends BaseBusiness<${ent.name}> {\n`;
@@ -46,7 +46,7 @@ export let generateRepoLayers: Function = async (ent: genEntity) => {
     writeBusDir = await confirmDir(repoGenConfig.busDir, "Business Layer");
     if (writeBusDir) {
       await fs.ensureDir(repoGenConfig.busDir);
-      await fs.writeFile(repoGenConfig.busDir + ent.name + "Business.ts", buildRepo(ent, writeBusDir, writeRepoDir));
+      await fs.writeFile(repoGenConfig.busDir + ent.name + "Business.ts", buildBus(ent, writeBusDir, writeRepoDir));
     }
   }
 

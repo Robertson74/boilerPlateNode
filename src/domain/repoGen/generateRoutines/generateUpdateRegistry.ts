@@ -15,7 +15,7 @@ export let generateUpdateRegistry: Function = async (ent: genEntity, paths: doma
   let busImport = 
     `import { ${ent.name}Business } from "${getRelativePath(repoGenConfig.repoReg, paths.busDir)}${ent.name}Business";`
   // bring in imports
-  repoRegistry = repoRegistry.replace(/;(\s\/\/\s###endRegistryImports)/, `\n${repoImport}\n${busImport}$1`);
+  repoRegistry = repoRegistry.replace(/;(\s\/\/\s###endRegistryImports)/, `;\n${repoImport}\n${busImport}$1`);
   // update repo entries
   let repoEntry = `  ${ent.name}: [ ${ent.name}Repo, ${ent.name}Business ]`
   repoRegistry = repoRegistry.replace(/(\s\/\/\s###endRepoRegistry)/, `,\n${repoEntry}$1`);
