@@ -5,8 +5,6 @@ export let getRelativePath: Function = (firstFile: string, secondFile: string) =
   let relativePath = "";
   let index: number = 0;
   let split: number = 0;
-  console.log(firstFilePath);
-  console.log(secondFilePath);
   // find where the paths differ
   while (index < firstFilePath.length) {
     if ((firstFilePath[index] != secondFilePath[index]) && split == 0) {
@@ -18,8 +16,6 @@ export let getRelativePath: Function = (firstFile: string, secondFile: string) =
     relativePath = "./";
     if (firstFilePath.length < secondFilePath.length) {
       index = firstFilePath.length;
-      console.log(index);
-      console.log(firstFilePath.length);
       while (index < secondFilePath.length) {
         relativePath+= secondFilePath[index] + "/";
         index++;
@@ -35,6 +31,7 @@ export let getRelativePath: Function = (firstFile: string, secondFile: string) =
     index = split;
     // then copy the rest of the path from the split to the file
     while (index != secondFilePath.length) {
+      secondFilePath[index]
       relativePath+= secondFilePath[index] + "/";
       index++;
     }

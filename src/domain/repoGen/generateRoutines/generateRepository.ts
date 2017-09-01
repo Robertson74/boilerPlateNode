@@ -2,46 +2,9 @@
 import * as inquirer from "inquirer";
 import { generateEntity } from "./generateEntity";
 import { generateInterface } from "./generateModel";
-import { genEntity, Model, Prop } from "../types";
-
-console.log("REPOGEN");
-export const generateRepository: Function = async () => {
-  console.log("generate repo");
-
-  // let id: Prop = {
-  //   optional: false,
-  //   readOnly: true,
-  //   propertyName: "id",
-  //   propertyType: "number"
-  // }
-
-  // let amount: Prop = {
-  //   optional: false,
-  //   readOnly: false,
-  //   propertyName: "amount",
-  //   propertyType: "number"
-  // }
-
-  // let midId: Prop = {
-  //   optional: false,
-  //   readOnly: false,
-  //   propertyName: "midId",
-  //   propertyType: "string"
-  // }
-
-  // let model: Model = {
-  //   name: "Transaction",
-  //   writeDir: "./src/domain/repoGen/test/",
-  //   props: []
-  // };
-  // model.props.push(id);
-  // model.props.push(amount);
-  // model.props.push(midId);
-
-  // console.log("Generating...");
-  // let model: Model = await generateInterface();
-  // let genEntity = await generateEntity(model);
-};
+import { genEntity, genModel, genProp, domainPaths } from "../types";
+import { generateRepoLayers } from "./generateRepoLayers";
+import { generateUpdateRegistry } from "./generateUpdateRegistry";
 
 // confirm making an entity
 let askToContinue: Function = async () => {
@@ -54,7 +17,21 @@ let askToContinue: Function = async () => {
 };
 
 (async () => {
+  console.log("Generating");
+  // let ent: genEntity = {
+  //   name: "Newclass",
+  //   dbName: "",
+  //   props: [],
+  //   modelDir: "",
+  //   writeDir: ""
+  // };
+  // let paths: domainPaths = {
+  //   busDir: "./src/domain/bus/path/here/",
+  //   repoDir: "./src/domain/repo/path/here/"
+  // }
   await askToContinue();
-  let model: Model = await generateInterface();
-  let genEntity: genEntity = await generateEntity(model);
+  let model: genModel = await generateInterface();
+  let ent: genEntity = await generateEntity(model);
+  let paths: domainPaths = await generateRepoLayers(ent);
+  await generateUpdateRegistry(ent, paths);
 })();

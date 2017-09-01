@@ -11,22 +11,15 @@ const testing: string = "text";
 console.log(testing.match(/e/));
 
 import "reflect-metadata";
-import {createConnection} from "typeorm";
-import { Mid } from "./domain/repoGen/testEntity/Mid";
+import { Connection } from "typeorm/connection/Connection";
+import { DevConfig } from "./config/devConfig";
+import { EntityManager } from "./domain/entityManager/EntityManager";
+import { MysqlConnectionCreator } from "./domain/DAL/mysql/connection";
+import { createConnection } from "typeorm";
+import { repoRegistry } from "./domain/entityManager/RepoRegistry";
 
-createConnection({
-  type: "mysql",
-  driver: {
-    host: "localhost",
-    port: 3306,
-    username: "root",
-    password: "devdb",
-    database: "repoGen"
-  },
-  entities: [
-    Mid
-  ],
-  autoSchemaSync: true,
-}).then(connection => {
-  // here you can start to work with your entities
-}).catch(error => console.log(error));
+(async () => {
+  const conn: Connection = await (new MysqlConnectionCreator(new DevConfig(), createConnection)).createMysqlConnection();
+  let em = new EntityManager(conn, repoRegistry);
+  em.getRepository("User");
+})();

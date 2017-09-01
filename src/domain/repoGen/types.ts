@@ -1,18 +1,18 @@
 /* tslint:disable */
-export type Prop = {
+export type genProp = {
   propertyName: string,
   propertyType: string,
   readOnly: boolean,
   optional: boolean
 };
 
-export type Model = {
+export type genModel = {
   name: string,
   writeDir: string,
-  props: Prop[]
+  props: genProp[]
 };
 
-export type EntityProp = {
+export type genEntityProp = {
   dbType: string;
   type: string;
   dbName: string;
@@ -29,5 +29,12 @@ export type EntityProp = {
 export type genEntity = {
   name: string;
   dbName: string;
-  props: EntityProp[];
+  props: genEntityProp[];
+  modelDir: string;
+  writeDir: string;
+}
+
+export type domainPaths ={
+  repoDir: string,
+  busDir: string,
 }

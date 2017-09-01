@@ -4,7 +4,8 @@ import { exec } from "child_process";
 import { repoGenConfig } from "../repoGenConfig";
 import { getRelativePath } from "../tools/getRelativePath";
 import * as inquirer from "inquirer";
-import { Prop, Model, EntityProp, genEntity } from "../types";
+import { genEntity, genModel, genProp, genEntityProp } from "../types";
+import { confirmDir } from "../tools/confirmDir";
 
 const noSpaces = (input: string): string | boolean => {
   if (input.length == 0) {
@@ -17,7 +18,7 @@ const noSpaces = (input: string): string | boolean => {
   }
 }
 
-export let generateEntity: Function = async (generatedModel: Model) => {
+export let generateEntity: Function = async (generatedModel: genModel) => {
 
   // globals
   let isDbEntity: boolean = false;
@@ -27,8 +28,9 @@ export let generateEntity: Function = async (generatedModel: Model) => {
   let generatedEntity: genEntity = {
     name: "",
     dbName: "",
-    props: []
-
+    props: [],
+    modelDir: "",
+    writeDir: ""
   };
 
   console.log("Creating Entity...");
@@ -66,7 +68,7 @@ export let generateEntity: Function = async (generatedModel: Model) => {
   };
 
   // ask for property database name
-  let askPropName: Function = async (prop: EntityProp) => {
+  let askPropName: Function = async (prop: genEntityProp) => {
     propertyNameQ = {
       type: "input",
       name: "answer",
@@ -79,7 +81,7 @@ export let generateEntity: Function = async (generatedModel: Model) => {
   };
 
   // ask for property database type
-  let askPropType: Function = async (prop: EntityProp) => {
+  let askPropType: Function = async (prop: genEntityProp) => {
     propertyTypeQ = {
       type: "list",
       name: "answer",
@@ -108,7 +110,7 @@ export let generateEntity: Function = async (generatedModel: Model) => {
   };
 
   // ask for other property options
-  let askPropOptions: Function = async (prop: EntityProp) => {
+  let askPropOptions: Function = async (prop: genEntityProp) => {
     let choices: string[] = [
       "private",
       "unique",
@@ -148,20 +150,22 @@ export let generateEntity: Function = async (generatedModel: Model) => {
   // display properties
   let buildDisplayProperties: Function = (ent: genEntity) => {
     let displayProperties = ``;
-    ent.props.forEach((val: EntityProp) => {
-      if (val.primary) {
-        if (primaryGenerated) {
-          displayProperties+= `  @PrimaryGeneratedColumn({name: "${val.dbName}"`;
+    ent.props.forEach((val: genEntityProp) => {
+      if (isDbEntity) {
+        if (val.primary) {
+          if (primaryGenerated) {
+            displayProperties+= `  @PrimaryGeneratedColumn({name: "${val.dbName}"`;
+          } else {
+            displayProperties+= `  @PrimaryColumn({name: "${val.dbName}"`;
+          }
         } else {
-          displayProperties+= `  @PrimaryColumn({name: "${val.dbName}"`;
+          displayProperties+= `  @Column({name: "${val.dbName}"`;
         }
-      } else {
-        displayProperties+= `  @Column({name: "${val.dbName}"`;
+        if (val.dbType != "DGAF") { displayProperties+= `, type: "${val.dbType}"`; }
+        if (val.length > -1) { displayProperties+= `, length: ${val.length}`; }
+        if (val.unique) { displayProperties+= `, unique: ${val.unique}`; }
+        displayProperties+= `})\n`;
       }
-      if (val.dbType != "DGAF") { displayProperties+= `, type: "${val.dbType}"`; }
-      if (val.length > -1) { displayProperties+= `, length: ${val.length}`; }
-      if (val.unique) { displayProperties+= `, unique: ${val.unique}`; }
-      displayProperties+= `})\n`;
       displayProperties+= `  private _` + val.name + `: ` + val.type + `;\n\n`;
     });
     return displayProperties
@@ -170,22 +174,24 @@ export let generateEntity: Function = async (generatedModel: Model) => {
   // display entity
   let buildDisplayEnity: Function = (ent: genEntity) => {
     let displayProperties: string = buildDisplayProperties(ent);
-    let displayEntity: string = 
-      `\nEntity---------------------------------\n\n`
-      + `@Entity("${ ent.dbName }")\n`
-      + `class ${ ent.name } {\n\n`
-      + `${displayProperties}`
-      +`}`
+    let displayEntity: string = ``;
+    displayEntity+= `\nEntity---------------------------------\n\n`
+    if (isDbEntity) {
+      displayEntity+= `@Entity("${ ent.dbName }")\n`
+    }
+    displayEntity+= `class ${ ent.name } {\n\n`
+    displayEntity+= `${displayProperties}`
+    displayEntity+= `}`
     return displayEntity
   };
 
   // build header imports
   let buildHeaderImports: Function = (): string => {
     let headers: string = 
-     `import { Column } from "typeorm/decorator/columns/Column";\n`
-    + `import { Entity } from "typeorm/decorator/entity/Entity";\n`
-    + `import { PrimaryColumn } from "typeorm/decorator/columns/PrimaryColumn";\n`
-    + `import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";\n\n`;
+      `import { Column } from "typeorm/decorator/columns/Column";\n`
+      + `import { PrimaryColumn } from "typeorm/decorator/columns/PrimaryColumn";\n`
+      + `import { PrimaryGeneratedColumn } from "typeorm/decorator/columns/PrimaryGeneratedColumn";\n\n`
+    + `import { Entity } from "typeorm/decorator/entity/Entity";\n`;
     return headers;
   };
 
@@ -215,60 +221,28 @@ export let generateEntity: Function = async (generatedModel: Model) => {
     let displayProperties: string = buildDisplayProperties(ent);
     let getterSetters: string = buildGetterSetters(ent);
     let headers: string = buildHeaderImports();
-    let writeEntity: string =
-      `${headers}`
-      + `@Entity("${ ent.dbName }")\n`
-      + `export class ${ ent.name } {\n\n`
-      + `${displayProperties}`
-      + `  constructor() {\n    // defaults \n  }\n\n`
-      + `${getterSetters}`
-      +`}\n`;
+    let writeEntity: string = ``;
+    writeEntity+= `${headers}`
+    if(isDbEntity){
+      writeEntity+= `@Entity("${ ent.dbName }")\n`
+    }
+    writeEntity+= `export class ${ ent.name } {\n\n`
+    writeEntity+= `${displayProperties}`
+    writeEntity+= `  constructor() {\n    // defaults \n  }\n\n`
+    writeEntity+= `${getterSetters}`
+    writeEntity+= `}\n`;
     return writeEntity;
-  }
-
-  // confirm dir to write to
-  let confirmDir = async () => {
-    let confirmDirQ: inquirer.Question;
-    confirmDirQ = {
-      type: "list",
-      name: "answer",
-      message: "Write entity to this DIR: " + repoGenConfig.entityDir + " ?",
-      choices: [
-        "yes",
-        "no",
-        "change DIR"
-      ]
-    };
-    let changeDirQ: inquirer.Question;
-    changeDirQ = {
-      type: "input",
-      name: "answer",
-      message: "Where to write?",
-      validate: noSpaces,
-      default: repoGenConfig.entityDir
-    }
-    let confirmDirA = await inquirer.prompt([confirmDirQ]);
-    if (confirmDirA.answer == "change DIR") {
-      let changeDirA: inquirer.Answers = await inquirer.prompt([changeDirQ]);
-      repoGenConfig.modelDir = changeDirA.answer;
-      confirmDirQ.message = "Write interface to this DIR: " + repoGenConfig.modelDir + " ?";
-      await confirmDir();
-    }
-    if (confirmDirA.answer == "yes") {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   return await (async () => {
     generatedEntity.name = generatedModel.name;
+    generatedEntity.modelDir = generatedModel.writeDir;
     await askIfDbEntity(generatedEntity);
     if (isDbEntity) {
       generatedEntity = await askDBName(generatedEntity, generatedModel);
     }
     for (let prop of generatedModel.props) {
-      let eProp: EntityProp = {
+      let eProp: genEntityProp = {
         name: prop.propertyName,
         type: prop.propertyType,
         dbName: "",
@@ -292,13 +266,14 @@ export let generateEntity: Function = async (generatedModel: Model) => {
       }
       generatedEntity.props.push(eProp);
     };
-    console.log(buildDisplayEnity(generatedEntity));
+
     console.log("Writing entity...");
-    if (await confirmDir()) {
+    let writeDir = await confirmDir(repoGenConfig.entityDir, "Entity");
+    if (writeDir) {
+      generatedEntity.writeDir = repoGenConfig.entityDir;
       await fs.ensureDir(repoGenConfig.entityDir);
       await fs.writeFile(repoGenConfig.entityDir + "/" + generatedEntity.name + ".ts", buildWriteEntity(generatedEntity));
     }
-    console.log(buildWriteEntity(generatedEntity));
     return generatedEntity;
   })();
 }

@@ -2,21 +2,13 @@
 import * as inquirer from "inquirer";
 import * as fs from "fs-extra";
 import { repoGenConfig } from "../repoGenConfig";
-import { Model } from "../types";
+import { genModel } from "../types";
+import { noSpaces } from "../tools/validation";
+import { confirmDir } from "../tools/confirmDir";
 
 export const generateInterface: Function = async () => {
 
   console.log("Generating Model..");
-
-
-  // validate there are not spaces
-  const noSpaces = (input: string): string | boolean => {
-    if (input.match(/\s/)) {
-      return "ERROR: No spaces allowed here.";
-    } else {
-      return true;
-    }
-  }
 
   // globals
   const types: string[] = [ "any", "array", "boolean", "number", "object", "string", "other" ];
@@ -24,7 +16,8 @@ export const generateInterface: Function = async () => {
   let anotherProp: boolean = true;
   let header: string = "";
   let happyWithModel: boolean = false;
-  let writeInterface: boolean = false;
+  // let writeInterface: boolean = false;
+  let writeInterface: string|boolean = false;
   let newProp: Prop = {propertyName: "", propertyType: "", readOnly: false, optional: false};
   type Prop = {
     propertyName: string,
@@ -34,7 +27,7 @@ export const generateInterface: Function = async () => {
   };
 
   // main model
-  let model: Model = {
+  let model: genModel = {
     name: "",
     writeDir: "",
     props: []
@@ -47,8 +40,6 @@ export const generateInterface: Function = async () => {
   let propAttritbutesQ: inquirer.Question;
   let okayWithModelQ: inquirer.Question;
   let morePropertiesQ: inquirer.Question;
-  let confirmDirQ: inquirer.Question;
-  let confirmDirA;
   let changeDirQ: inquirer.Question;
 
   const setupQuestions: Function = () => {
@@ -95,17 +86,6 @@ export const generateInterface: Function = async () => {
       type: "confirm",
       name: "answer",
       message: "Would you like to add a property:",
-    };
-
-    confirmDirQ = {
-      type: "list",
-      name: "answer",
-      message: "Write interface to this DIR: " + repoGenConfig.modelDir + " ?",
-      choices: [
-        "yes",
-        "no",
-        "change DIR"
-      ]
     };
 
     changeDirQ = {
@@ -199,22 +179,6 @@ export const generateInterface: Function = async () => {
       return buildModel;
     }
 
-    // confirm the write dir
-    let confirmDir = async () => {
-      confirmDirA = await inquirer.prompt([confirmDirQ]);
-      if (confirmDirA.answer == "change DIR") {
-        let changeDirA: inquirer.Answers = await inquirer.prompt([changeDirQ]);
-        repoGenConfig.modelDir = changeDirA.answer;
-        confirmDirQ.message = "Write interface to this DIR: " + repoGenConfig.modelDir + " ?";
-        await confirmDir();
-      }
-      if (confirmDirA.answer == "yes") {
-        writeInterface = true;
-      } else {
-        writeInterface = false;
-      }
-    }
-
     // collect info from user
     while (happyWithModel == false) {
       model.name = "";
@@ -232,9 +196,10 @@ export const generateInterface: Function = async () => {
         await moreProps();
       }
       await finishedWithModel();
-      await confirmDir();
+      writeInterface = await confirmDir(repoGenConfig.modelDir, "interface");
     }
 
+    console.log(writeInterface);
     // write out the model
     if (writeInterface) {
       model.writeDir = repoGenConfig.modelDir;
