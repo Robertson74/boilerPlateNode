@@ -10,7 +10,7 @@ import * as logger from "morgan";
 import * as path from "path";
 
 // Creates and configures an ExpressJS web server.
-class App {
+export class App {
 
   // ref to Express instance
   public express: express.Application;
@@ -45,5 +45,3 @@ class App {
   }
 
 }
-
-export default new App().express;

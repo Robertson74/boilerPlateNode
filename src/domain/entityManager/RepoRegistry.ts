@@ -5,9 +5,9 @@
  */
 
 import { BaseBusiness } from "../business/baseInterface/BaseBusiness";
-import { UserBusiness } from "../business/UserBusiness";
 import { BaseRepository } from "../repo/baseInterface/baseRepo";
-import { UserRepo } from "../repo/UserRepo"; // ###endRegistryImports
+import { UserRepo } from "../repo/UserRepo";
+import { UserBusiness } from "../business/UserBusiness"; // ###endRegistryImports
 
 // format of registry entries:
 // Model: [ RepoClass, BusinessClass]

@@ -1,9 +1,6 @@
-/**
- * @file IUser.ts - User interface
- * @author Michael Robertson
- * @version 0.0.1
- */
 export interface IUser {
   id: number;
+  password: string;
+  email: string;
   name: string;
 }
